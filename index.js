@@ -9,7 +9,7 @@ module.exports = function(homebridge) {
   Characteristic = homebridge.hap.Characteristic;
     
   fixInheritance(HarmanKardonAVRAccessory.Input, Characteristic);
-  fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
+  //fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
   fixInheritance(HarmanKardonAVRAccessory.AudioService, Service);    
 
   homebridge.registerAccessory("homebridge-harman-kardon-avr", "harman-kardon-avr", HarmanKardonAVRAccessory);
@@ -58,13 +58,14 @@ HarmanKardonAVRAccessory.Input = function () {
 
 
 HarmanKardonAVRAccessory.Mute = function () {
-    Characteristic.call(this, 'Input', '00001001-0000-1000-8000-135D67EC4377');
+    Characteristic.call(this, 'Eingang', '00001001-0000-1000-8000-135D67EC4377');
     this.setProps({
-    format: Characteristic.Formats.UINT16,
-    maxValue: 16,
-    minValue: 1,
-    minStep: 1,
-    perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        format: Characteristic.Formats.UINT8,
+        unit: Characteristic.Units.PERCENTAGE,
+        maxValue: 2,
+        minValue: 0,
+        minStep: 1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
     });
     this.value = this.getDefaultValue();
 };
@@ -81,7 +82,6 @@ HarmanKardonAVRAccessory.prototype = {
     
   setPowerState: function(powerOn, callback) {
     var that        = this;
-    var command     = powerOn ? that.on_command : that.off_command;
     if (powerOn) {
         var client = new net.Socket();
         client.connect(this.port, this.ip, function() {
@@ -148,7 +148,8 @@ HarmanKardonAVRAccessory.prototype = {
       
       var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
     availableServices.push(audioService);
-      audioService.getCharacteristic(HarmanKardonAVRAccessory.Mute)
+      audioService
+      .getCharacteristic(HarmanKardonAVRAccessory.Mute)
       .on('set', this.setMute.bind(this));
 
       
