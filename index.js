@@ -12,7 +12,7 @@ module.exports = function(homebridge) {
   fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
   fixInheritance(HarmanKardonAVRAccessory.AudioService, Service);    
 
-  homebridge.registerAccessory("homebridge-harman-kardon-avr", "Harman Kardon AVR", HarmanKardonAVRAccessory);
+  homebridge.registerAccessory("homebridge-harman-kardon-avr", "harman-kardon-avr", HarmanKardonAVRAccessory);
 };
 
 function fixInheritance(subclass, superclass) {
