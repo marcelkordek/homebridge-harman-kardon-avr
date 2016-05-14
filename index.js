@@ -60,9 +60,13 @@ HarmanKardonAVRAccessory.Input = function () {
 HarmanKardonAVRAccessory.Mute = function () {
     Characteristic.call(this, 'Mute', '6b5e0bed-fdbe-40b6-84e1-12ca1562babd');
     this.setProps({
-        format: Characteristic.Formats.UINT8,
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
-    });
+    format: Characteristic.Formats.INT,
+    unit: Characteristic.Units.PERCENTAGE,
+    maxValue: 100,
+    minValue: 0,
+    minStep: 1,
+    perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+  });
     this.value = this.getDefaultValue();
 };
 
