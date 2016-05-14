@@ -1,10 +1,14 @@
 {
   "name": "homebridge-harman-kardon-avr",
   "version": "1.0.0",
-  "description": "control harman kardon avr using homebridge",
+  "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "dependencies": {
+    "request": "^2.65.0"
   },
   "repository": {
     "type": "git",
