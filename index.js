@@ -28,7 +28,7 @@ function buildRequest(cmd,para) {
    var text = '';
    var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>'+cmd+'</name> <zone>Main Zone</zone> <para>'+para+'</para> </control> </common> </avr> </harman>';
    text += 'POST HK_APP HTTP/1.1\r\n';
-   text += 'Host: :' + PORT + '\r\n';
+   text += 'Host: :' + this.ip + '\r\n';
    text += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n';
    text += 'Content-Length: ' + payload.length + '\r\n';
    text += '\r\n';
@@ -40,7 +40,7 @@ function buildRequest(cmd,para) {
 function HarmanKardonAVRAccessory(log, config) {
   this.log          = log;
   this.name         = config["name"];
-  this.ip         = config["ip"];
+  this.ip           = config["ip"];
   this.port         = config["port"];    
   this.model_name   = config["model_name"] || "AVR 161";
   this.manufacturer = config["manufacturer"] || "Harman Kardon";    
@@ -64,7 +64,7 @@ HarmanKardonAVRAccessory.Mute = function () {
         perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
     });
     this.value = this.getDefaultValue();
-}
+};
 
 
 HarmanKardonAVRAccessory.AudioService = function (displayName, subtype) {
@@ -98,7 +98,7 @@ HarmanKardonAVRAccessory.prototype = {
       
   getPowerState: function(callback) {
     var that        = this;
-    var state        = false;   
+    var state       = false;   
 
     exec("ping -c 2 -W 1 " +this.ip+ " | grep -i '2 received'", function(error, stdout, stderr) {
         state = stdout ? true : false;
@@ -138,13 +138,13 @@ HarmanKardonAVRAccessory.prototype = {
       var switchService = new Service.Switch(this.name);
       availableServices.push(switchService);    
 
-      switchService
+    switchService
       .getCharacteristic(Characteristic.On)
       .on('set', this.setPowerState.bind(this));
       .on('get', this.getPowerState.bind(this));
       
       var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
-      availableServices.push(audioService);
+    availableServices.push(audioService);
       audioService.getCharacteristic(HarmanKardonAVRAccessory.Mute)
       .on('set', this.setMute.bind(this));
 
