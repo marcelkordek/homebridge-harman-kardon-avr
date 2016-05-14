@@ -102,9 +102,9 @@ HarmanKardonAVRAccessory.prototype = {
 
     exec("ping -c 2 -W 1 " +this.ip+ " | grep -i '2 received'", function(error, stdout, stderr) {
         state = stdout ? true : false;
+        that.log("Current state: " + (state ? "On." : "Off."));
         callback(null, state);
     });
-    this.log("Current state: " + (state ? "On." : "Off."));  
   },
     
   setMute: function(callback) {
@@ -113,9 +113,9 @@ HarmanKardonAVRAccessory.prototype = {
     var client = new net.Socket();
     client.connect(this.port, this.ip, function() {
     client.write(buildRequest('mute-on'));
-    client.destroy();   
-  });
-    callback();
+    client.destroy();
+        callback(null);
+    });
   },    
     
   identify: function(callback) {
