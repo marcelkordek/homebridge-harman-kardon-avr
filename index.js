@@ -1,34 +1,23 @@
 var request = require("request");
 var Service, Characteristic;
 var exec = require('child_process').exec;
-var fs = require('fs');
+var net = require('net');
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
 
-  homebridge.registerAccessory("homebridge-lirc", "Lirc", GenericLircDeviceAccessory);
+  homebridge.registerAccessory("homebridge-harman-kardon-avr", "Harman Kardon AVR", HarmanKardonAVRAccessory);
 }
 
-function GenericLircDeviceAccessory(log, config) {
+function HarmanKardonAVRAccessory(log, config) {
   this.log          = log;
-  this.id           = config["id"];
   this.name         = config["name"];
-  this.model_name   = config["model_name"];
-  this.manufacturer = config["manufacturer"];
-  this.on_command   = config["on_command"];
-  this.off_command  = config["off_command"];
-  this.speed_0  = config["speed_0"];
-  this.speed_1  = config["speed_1"];
-  this.speed_2  = config["speed_2"];
-  this.speed_3  = config["speed_3"];
-  this.speedIndex = 0;    
-  this.power_state  = config["initial_state"];
-  this.type  = config["type"] || "Switch";
-  this.fanLight  = config["fanLight"] || "";    
+  this.model_name   = config["model_name"] || "AVR 161";
+  this.manufacturer = config["manufacturer"] || "Harman Kardon";    
 }
 
-GenericLircDeviceAccessory.prototype = {
+HarmanKardonAVRAccessory.prototype = {
   setPowerState: function(powerOn, callback) {
     var that        = this;
     var command     = powerOn ? that.on_command : that.off_command;
@@ -138,7 +127,7 @@ GenericLircDeviceAccessory.prototype = {
     informationService
       .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
       .setCharacteristic(Characteristic.Model, this.model_name)
-      .setCharacteristic(Characteristic.SerialNumber, this.id);
+      .setCharacteristic(Characteristic.SerialNumber, this.model_name);
            
     if (this.type == "Switch") {    
       var switchService = new Service.Switch(this.name);
