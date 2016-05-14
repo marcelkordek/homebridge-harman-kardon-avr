@@ -58,7 +58,7 @@ HarmanKardonAVRAccessory.Input = function () {
 
 
 HarmanKardonAVRAccessory.Mute = function () {
-    Characteristic.call(this, 'Mute', '6b5e0bed-fdbe-40b6-84e1-12ca1562babd');
+    Characteristic.call(this, 'Audio Feedback', '00000005-0000-1000-8000-0026BB765291');
     this.setProps({
     format: Characteristic.Formats.BOOL,
     perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
