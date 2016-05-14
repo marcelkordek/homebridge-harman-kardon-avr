@@ -58,18 +58,21 @@ HarmanKardonAVRAccessory.Input = function () {
 
 
 HarmanKardonAVRAccessory.Mute = function () {
-    Characteristic.call(this, 'Audio Feedback', '00000005-0000-1000-8000-0026BB765291');
+    Characteristic.call(this, 'Input', '00000005-0000-1000-8000-0026BB765291');
     this.setProps({
-    format: Characteristic.Formats.BOOL,
-    perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
-  });
+    format: Characteristic.Formats.UINT16,
+    maxValue: 16,
+    minValue: 1,
+    minStep: 1,
+    perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+    });
     this.value = this.getDefaultValue();
 };
 
 
 HarmanKardonAVRAccessory.AudioService = function (displayName, subtype) {
     Service.call(this, displayName, '48a7057e-cb08-407f-bf03-6317700b3085', subtype);
-    this.addCharacteristic(HarmanKardonAVRAccessory.Input);
+    //this.addCharacteristic(HarmanKardonAVRAccessory.Input);
     this.addOptionalCharacteristic(HarmanKardonAVRAccessory.Mute);
 };
 
