@@ -1,0 +1,30 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "CC:22:3D:E3:CE:30",
+        "port": 51826,
+        "pin": "123-45-678"
+    },
+
+    "description": "",
+
+    "accessories": [
+        {
+            "accessory": "Lirc",
+            "name": "Ventilator",
+            "description": "Ventilator",
+            "id": "Ventilator",
+            "manufacturer": "Generic",
+            "model_name": "GenericFan",
+            "on_command": "irsend SEND_ONCE ventilator key_power\r",
+            "off_command": "irsend SEND_ONCE ventilator key_power\r",
+            "speed_0": "irsend SEND_ONCE ventilator key_0\r",
+            "speed_1": "irsend SEND_ONCE ventilator key_1\r",
+            "speed_2": "irsend SEND_ONCE ventilator key_2\r",
+            "speed_3": "irsend SEND_ONCE ventilator key_3\r",
+            "initial_state": "off",
+            "type": "Fan",
+            "fanLight":"yes"
+        }
+    ]
+}
