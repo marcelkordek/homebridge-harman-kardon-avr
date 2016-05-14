@@ -140,7 +140,7 @@ HarmanKardonAVRAccessory.prototype = {
 
     switchService
       .getCharacteristic(Characteristic.On)
-      .on('set', this.setPowerState.bind(this));
+      .on('set', this.setPowerState.bind(this))
       .on('get', this.getPowerState.bind(this));
       
       var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
