@@ -13,7 +13,7 @@ module.exports = function(homebridge) {
   fixInheritance(HarmanKardonAVRAccessory.AudioService, Service);    
 
   homebridge.registerAccessory("homebridge-harman-kardon-avr", "Harman Kardon AVR", HarmanKardonAVRAccessory);
-}
+};
 
 function fixInheritance(subclass, superclass) {
     var proto = subclass.prototype;
@@ -22,7 +22,7 @@ function fixInheritance(subclass, superclass) {
     for (var mn in proto) {
         subclass.prototype[mn] = proto[mn];
     }
-}
+};
 
 function buildRequest(cmd,para) {
    var text = '';
@@ -35,7 +35,7 @@ function buildRequest(cmd,para) {
    text += payload;
    //console.log(text);
    return text;
-}
+};
 
 function HarmanKardonAVRAccessory(log, config) {
   this.log          = log;
@@ -44,7 +44,7 @@ function HarmanKardonAVRAccessory(log, config) {
   this.port         = config["port"];    
   this.model_name   = config["model_name"] || "AVR 161";
   this.manufacturer = config["manufacturer"] || "Harman Kardon";    
-}
+};
 
 //custom characteristics
 HarmanKardonAVRAccessory.Input = function () {
