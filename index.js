@@ -139,13 +139,14 @@ HarmanKardonAVRAccessory.prototype = {
       availableServices.push(switchService);    
 
       switchService
-        .getCharacteristic(Characteristic.On)
-        .on('set', this.setPowerState.bind(this));
-        .on('get', this.getPowerState.bind(this));
+      .getCharacteristic(Characteristic.On)
+      .on('set', this.setPowerState.bind(this));
+      .on('get', this.getPowerState.bind(this));
       
       var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
-        audioService.getCharacteristic(HarmanKardonAVRAccessory.Mute)
-        .on('set', this.setMute.bind(this));
+      availableServices.push(audioService);
+      audioService.getCharacteristic(HarmanKardonAVRAccessory.Mute)
+      .on('set', this.setMute.bind(this));
 
       
       return availableServices;
