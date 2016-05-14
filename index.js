@@ -107,9 +107,9 @@ HarmanKardonAVRAccessory.prototype = {
     });
   },
     
-  setMute: function(callback) {
+  setMute: function(state, callback) {
     var that        = this;
-    this.log("Set Mute");
+    this.log("Set Mute:" + state);
     var client = new net.Socket();
     client.connect(this.port, this.ip, function() {
     client.write(buildRequest('mute-on'));
