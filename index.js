@@ -2,114 +2,121 @@ var request = require("request");
 var Service, Characteristic;
 var exec = require('child_process').exec;
 var net = require('net');
+var inherits = require('util').inherits;
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+    
+  fixInheritance(HarmanKardonAVRAccessory.Input, Characteristic);
+  fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
+  fixInheritance(HarmanKardonAVRAccessory.AudioService, Service);    
 
   homebridge.registerAccessory("homebridge-harman-kardon-avr", "Harman Kardon AVR", HarmanKardonAVRAccessory);
+}
+
+function fixInheritance(subclass, superclass) {
+    var proto = subclass.prototype;
+    inherits(subclass, superclass);
+    subclass.prototype.parent = superclass.prototype;
+    for (var mn in proto) {
+        subclass.prototype[mn] = proto[mn];
+    }
+}
+
+function buildRequest(cmd,para) {
+   var text = '';
+   var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>'+cmd+'</name> <zone>Main Zone</zone> <para>'+para+'</para> </control> </common> </avr> </harman>';
+   text += 'POST HK_APP HTTP/1.1\r\n';
+   text += 'Host: :' + PORT + '\r\n';
+   text += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n';
+   text += 'Content-Length: ' + payload.length + '\r\n';
+   text += '\r\n';
+   text += payload;
+   //console.log(text);
+   return text;
 }
 
 function HarmanKardonAVRAccessory(log, config) {
   this.log          = log;
   this.name         = config["name"];
+  this.ip         = config["ip"];
+  this.port         = config["port"];    
   this.model_name   = config["model_name"] || "AVR 161";
   this.manufacturer = config["manufacturer"] || "Harman Kardon";    
 }
 
+//custom characteristics
+HarmanKardonAVRAccessory.Input = function () {
+    Characteristic.call(this, 'Input', '00001001-0000-1000-8000-135D67EC4377');
+    this.setProps({
+        format: Characteristic.Formats.UINT8,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+    });
+    this.value = this.getDefaultValue();
+};
+
+
+HarmanKardonAVRAccessory.Mute = function () {
+    Characteristic.call(this, 'Mute', '6b5e0bed-fdbe-40b6-84e1-12ca1562babd');
+    this.setProps({
+        format: Characteristic.Formats.UINT8,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
+    });
+    this.value = this.getDefaultValue();
+}
+
+
+HarmanKardonAVRAccessory.AudioService = function (displayName, subtype) {
+    Service.call(this, displayName, '48a7057e-cb08-407f-bf03-6317700b3085', subtype);
+    this.addCharacteristic(HarmanKardonAVRAccessory.Input);
+    this.addOptionalCharacteristic(HarmanKardonAVRAccessory.Mute);
+};
+
+
 HarmanKardonAVRAccessory.prototype = {
+    
   setPowerState: function(powerOn, callback) {
     var that        = this;
     var command     = powerOn ? that.on_command : that.off_command;
-    if (this.power_state == "off" && powerOn) {
-      this.power_state = "on"
-      exec(this.on_command, function(error, stdout, stderr) {
-        // command output is in stdout
-      });
-    } else if (this.power_state == "on" && !powerOn) {
-      this.power_state = "off"
-      exec(this.off_command, function(error, stdout, stderr) {
-        // command output is in stdout
-      });
+    if (powerOn) {
+        var client = new net.Socket();
+        client.connect(this.port, this.ip, function() {
+        client.write(buildRequest('power-on'));
+        client.destroy();   
+        });
+    } else {
+        var client = new net.Socket();
+        client.connect(this.port, this.ip, function() {
+        client.write(buildRequest('power-off'));
+        client.destroy();   
+        });
     }
-     fs.writeFile("/home/pi/"+this.name+".log", this.power_state, function(err) {
-    if(err) {
-        return console.log(err);
-    }
-
-
-}); 
-    callback()
-  },
-
-  setPowerStateFan: function(powerOn, callback) {
-    var that        = this;
-    var command     = powerOn ? that.speed_1 : that.speed_0;
-    if (this.speedIndex == 0 && powerOn) {
-      this.speedIndex = 1
-      exec(command, function(error, stdout, stderr) {
-        // command output is in stdout
-      });
-    } else if (this.speedIndex == 1 && !powerOn) {
-      this.speedIndex = 0
-      exec(command, function(error, stdout, stderr) {
-        // command output is in stdout
-      });
-    }
+      
     callback()
   },
       
   getPowerState: function(callback) {
     var that        = this;
-    this.log("Current state: " + (this.power_state ? "On." : "Off."));
-    var isOn;
-    if (this.power_state == "off"){
-        isOn = 0;
-    } else {
-        isOn = 1;
-    }
-    callback(null, isOn);
+    var state        = false;   
+
+    exec("ping -c 2 -W 1 " +this.ip+ " | grep -i '2 received'", function(error, stdout, stderr) {
+        state = stdout ? true : false;
+        this.log("Current state: " + (state ? "On." : "Off."));
+        callback(null, state);
+    });
   },
-  
-  getPowerStateFan: function(callback) {
+    
+  setMute: function(callback) {
     var that        = this;
-    this.log("Current FanState: " + (this.speedIndex ? "On." : "Off."));
-    var isOn;
-    if (this.speedIndex == 0){
-        isOn = 0;
-    } else {
-        isOn = 1;
-    }  
-    callback(null, isOn);
+    this.log("Set Mute");
+    var client = new net.Socket();
+    client.connect(this.port, this.ip, function() {
+    client.write(buildRequest('mute-on'));
+    client.destroy();   
+  });
+    callback();
   },    
-
-  getRotationSpeed: function(callback) {
-    var that        = this;  
-    callback(null, (this.speedIndex / 3.0) * 100.0);
-  },  
-
-  setRotationSpeed: function(rotationSpeed, callback) {
-    var that        = this;
-    var cmd = this.speed_0;  
-        if (rotationSpeed > 66.6) {
-            this.speedIndex = 3;
-            cmd = this.speed_3;
-        } else if (rotationSpeed > 33.3) {
-            this.speedIndex = 2;
-            cmd = this.speed_2;
-        } else if (rotationSpeed > 8) {
-            this.speedIndex = 1;
-            cmd = this.speed_1;
-        } else if (rotationSpeed = 0) {
-            this.speedIndex = 0;
-            cmd = this.speed_0;
-        }
-      this.log("Set rotationSpeed to: " + this.speedIndex + " ->" + rotationSpeed);
-      exec(cmd , function(error, stdout, stderr) {
-        // command output is in stdout
-      });
-    callback(null, (this.speedIndex / 3.0) * 100.0);
-  },
     
   identify: function(callback) {
       this.log('Identify requested!');
@@ -117,7 +124,6 @@ HarmanKardonAVRAccessory.prototype = {
     },    
     
   getServices: function() {
-    this.log("Register new " + this.type + " Service");
       
     var availableServices = [];  
     var informationService = new Service.AccessoryInformation();
@@ -127,45 +133,21 @@ HarmanKardonAVRAccessory.prototype = {
     informationService
       .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
       .setCharacteristic(Characteristic.Model, this.model_name)
-      .setCharacteristic(Characteristic.SerialNumber, this.model_name);
+     //.setCharacteristic(Characteristic.SerialNumber, this.model_name);
            
-    if (this.type == "Switch") {    
       var switchService = new Service.Switch(this.name);
       availableServices.push(switchService);    
 
       switchService
-      .getCharacteristic(Characteristic.On)
-      .on('set', this.setPowerState.bind(this));
-
-      
-    }
-      
-    if (this.type == "Fan") {
-
-      var fanService = new Service.Fan(this.name);
-      availableServices.push(fanService);    
-
-      fanService
         .getCharacteristic(Characteristic.On)
-        .on('get', this.getPowerStateFan.bind(this))
-        .on('set', this.setPowerStateFan.bind(this));
+        .on('set', this.setPowerState.bind(this));
+        .on('get', this.getPowerState.bind(this));
+      
+      var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
+        audioService.getCharacteristic(HarmanKardonAVRAccessory.Mute)
+        .on('set', this.setMute.bind(this));
 
-      fanService
-        .getCharacteristic(Characteristic.RotationSpeed)
-        .on('get', this.getRotationSpeed.bind(this))
-        .on('set', this.setRotationSpeed.bind(this));
-        
-      if (this.fanLight == "yes") {
-        var lightbulbService = new Service.Lightbulb(this.name+" Licht");
-        availableServices.push(lightbulbService);
-        
-        lightbulbService
-            .getCharacteristic(Characteristic.On)
-            .on('get', this.getPowerState.bind(this))
-            .on('set', this.setPowerState.bind(this));
-
-       }          
-    }
+      
       return availableServices;
   }
 }
