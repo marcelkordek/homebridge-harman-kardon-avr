@@ -16,7 +16,7 @@
             "manufacturer": "Harman Kardon",
             "model_name": "AVR 161",
             "ip": "10.0.0.85",
-            "port": "10025",
+            "port": "10025"
         }
     ]
 }
