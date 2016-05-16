@@ -8,8 +8,8 @@ module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
     
-  fixInheritance(HarmanKardonAVRAccessory.Input, Characteristic);
-  //fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
+  //fixInheritance(HarmanKardonAVRAccessory.Volume, Characteristic);    
+  fixInheritance(HarmanKardonAVRAccessory.Mute, Characteristic);
   fixInheritance(HarmanKardonAVRAccessory.AudioService, Service);    
 
   homebridge.registerAccessory("homebridge-harman-kardon-avr", "harman-kardon-avr", HarmanKardonAVRAccessory);
@@ -47,22 +47,12 @@ function HarmanKardonAVRAccessory(log, config) {
 };
 
 //custom characteristics
-HarmanKardonAVRAccessory.Input = function () {
-    Characteristic.call(this, 'Input', '00001001-0000-1000-8000-135D67EC4377');
-    this.setProps({
-        format: Characteristic.Formats.UINT8,
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
-    });
-    this.value = this.getDefaultValue();
-};
-
-
-HarmanKardonAVRAccessory.Mute = function () {
-    Characteristic.call(this, 'Eingang', '00001001-0000-1000-8000-135D67EC4377');
+HarmanKardonAVRAccessory.Volume = function () {
+    Characteristic.call(this, 'Volume', '00001001-0000-1000-8000-135D67EC4377');
     this.setProps({
         format: Characteristic.Formats.UINT8,
         unit: Characteristic.Units.PERCENTAGE,
-        maxValue: 2,
+        maxValue: 100,
         minValue: 0,
         minStep: 1,
         perms: [Characteristic.Perms.READ, Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
@@ -70,10 +60,19 @@ HarmanKardonAVRAccessory.Mute = function () {
     this.value = this.getDefaultValue();
 };
 
+HarmanKardonAVRAccessory.Mute = function () {
+    Characteristic.call(this, 'Outlet In Use', '00000026-0000-1000-8000-0026BB765291');
+  this.setProps({
+    format: Characteristic.Formats.BOOL,
+    perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+  });
+    this.value = this.getDefaultValue();
+};
+
 
 HarmanKardonAVRAccessory.AudioService = function (displayName, subtype) {
     Service.call(this, displayName, '48a7057e-cb08-407f-bf03-6317700b3085', subtype);
-    //this.addCharacteristic(HarmanKardonAVRAccessory.Input);
+    //this.addCharacteristic(HarmanKardonAVRAccessory.Volume);
     this.addOptionalCharacteristic(HarmanKardonAVRAccessory.Mute);
 };
 
@@ -95,6 +94,10 @@ HarmanKardonAVRAccessory.prototype = {
         client.destroy();   
         });
     }
+    client.on('error', function(err){
+    that.log("Error setting Powerstate: "+err.message);
+        
+     })  
       
     callback()
   },
@@ -110,15 +113,30 @@ HarmanKardonAVRAccessory.prototype = {
     });
   },
     
-  setMute: function(state, callback) {
+  setInput: function(input, callback) {
     var that        = this;
-    this.log("Set Mute:" + state);
+    this.log("Set Input:" + input);  
     var client = new net.Socket();
-    client.connect(this.port, this.ip, function() {
-    client.write(buildRequest('mute-on'));
-    client.destroy();
-        callback(null);
-    });
+      if(input){
+            this.log("Change input to Cable/Sat");
+            client.connect(this.port, this.ip, function() {
+            client.write(buildRequest('source-selection','Cable Sat'));
+            client.write(buildRequest('source-selection','Cable Sat'));
+            client.destroy();
+            });
+      } else {
+            this.log("Change input to STB");
+            client.connect(this.port, this.ip, function() {
+            client.write(buildRequest('source-selection','STB'));
+            client.write(buildRequest('source-selection','STB'));    
+            client.destroy();
+            });
+      }
+      client.on('error', function(err){
+        that.log("Error change input: "+err.message);
+      })
+      
+      callback()
   },    
     
   identify: function(callback) {
@@ -138,19 +156,28 @@ HarmanKardonAVRAccessory.prototype = {
       .setCharacteristic(Characteristic.Model, this.model_name)
      //.setCharacteristic(Characteristic.SerialNumber, this.model_name);
            
-      var switchService = new Service.Switch(this.name);
+    
+    var outletService = new Service.Outlet(this.name);
+      availableServices.push(outletService); 
+      
+    outletService
+      .getCharacteristic(Characteristic.On)
+      .on('set', this.setPowerState.bind(this))
+      .on('get', this.getPowerState.bind(this));
+    
+    var switchService = new Service.Switch('Sat/STB');
       availableServices.push(switchService);    
 
     switchService
       .getCharacteristic(Characteristic.On)
-      .on('set', this.setPowerState.bind(this))
-      .on('get', this.getPowerState.bind(this));
+      .on('set', this.setInput.bind(this))
+
       
-      var audioService = new HarmanKardonAVRAccessory.AudioService('Audio Service');
+     /* var audioService = new HarmanKardonAVRAccessory.AudioService('Input');
     availableServices.push(audioService);
       audioService
       .getCharacteristic(HarmanKardonAVRAccessory.Mute)
-      .on('set', this.setMute.bind(this));
+      .on('set', this.setInput.bind(this));*/
 
       
       return availableServices;
