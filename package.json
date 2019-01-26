@@ -22,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/marcelkordek/homebridge-harman-kardon-avr/issues"
   },
-  "homepage": "https://github.com/marcelkordek/homebridge-harman-kardon-avr#readme"
+  "homepage": "https://github.com/marcelkordek/homebridge-harman-kardon-avr#readme",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
