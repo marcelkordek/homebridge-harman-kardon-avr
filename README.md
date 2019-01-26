@@ -3,7 +3,11 @@ This is a plugin for the Harman-Kardon-AVR.
 
 Installation
 --------------------
-    sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
+sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
+
+Alternative Installation
+--------------------
+cd $(npm root -g) && sudo git clone https://github.com/marcelkordek/homebridge-harman-kardon-avr.git && cd homebridge-harman-kardon-avr && sudo npm install
 
 Sample HomeBridge Configuration
 --------------------
