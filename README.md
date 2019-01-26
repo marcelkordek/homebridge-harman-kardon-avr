@@ -1,5 +1,5 @@
 # homebridge-harman-kardon-avr
-This is a plugin for the DS18B20 temperature sensors.
+This is a plugin for the Harman-Kardon-AVR.
 
 Installation
 --------------------
