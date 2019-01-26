@@ -27,7 +27,7 @@ Sample HomeBridge Configuration
 
     "accessories": [
         {
-            "accessory": "Harman Kardon AVR",
+            "accessory": "harman-kardon-avr",
             "name": "AVR",
             "description": "Harman Kardon AVR",
             "manufacturer": "Harman Kardon",
