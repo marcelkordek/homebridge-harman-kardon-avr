@@ -7,6 +7,10 @@ sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
 
 Alternative Installation
 --------------------
+sudo su && sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
+
+oder 
+
 cd $(npm root -g) && sudo git clone https://github.com/marcelkordek/homebridge-harman-kardon-avr.git && cd homebridge-harman-kardon-avr && sudo npm install
 
 Sample HomeBridge Configuration
