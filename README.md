@@ -1,4 +1,4 @@
-# @marcelkordek/tiny
+# @marcelkordek/homebridge-harman-kardon-avr
 
 [![npm (scoped)](https://img.shields.io/npm/v/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/@marcelkordek/homebridge-harman-kardon-avr) [![npm bundle size (scoped)](https://img.shields.io/bundlephobia/min/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 [![GitHub last commit](https://img.shields.io/github/last-commit/marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
