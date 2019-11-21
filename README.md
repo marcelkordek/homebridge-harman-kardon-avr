@@ -16,7 +16,7 @@ This plugin supports following functions:
 After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
 ```
-$ sudo npm install @marcelkordek/homebridge-harman-kardon-avr
+$ sudo npm install -g @marcelkordek/homebridge-harman-kardon-avr
 ```
 
 ## Basic configuration
