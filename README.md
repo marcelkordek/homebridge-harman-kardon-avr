@@ -1,6 +1,6 @@
-# @marcelkordek/homebridge-harman-kardon-avr
+# Homebridge Harman Kardon AVR
 
-[![npm (scoped)](https://img.shields.io/npm/v/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/@marcelkordek/homebridge-harman-kardon-avr) [![npm bundle size (scoped)](https://img.shields.io/bundlephobia/min/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
+[![npm (scoped)](https://img.shields.io/npm/v/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/homebridge-harman-kardon-avr) [![npm bundle size](https://img.shields.io/bundlephobia/min/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 [![GitHub last commit](https://img.shields.io/github/last-commit/marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your **Harman Kardon AVR.** 
@@ -16,7 +16,7 @@ This plugin supports following functions:
 After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
 ```
-$ sudo npm install -g @marcelkordek/homebridge-harman-kardon-avr
+$ sudo npm install -g homebridge-harman-kardon-avr
 ```
 
 ## Basic configuration

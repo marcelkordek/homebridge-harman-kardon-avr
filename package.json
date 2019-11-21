@@ -1,5 +1,5 @@
 {
-  "name": "@marcelkordek/homebridge-harman-kardon-avr",
+  "name": "homebridge-harman-kardon-avr",
   "version": "2.0.2",
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
@@ -37,7 +37,7 @@
   },
   "scripts": {
     "publish": "npm publish --access=public",
-    "publish:patch": "npm version patch && git push && npm publish --access=public",
+    "publish:patch": "npm version patch && git push && npm publish",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   }
