@@ -30,7 +30,11 @@ function HarmanKardonAVRAccessory(log, config) {
     var powerOn = false
     this.enabledServices = [];
     this.uuid = UUIDGen.generate(this.name)
+
+    // Socket Connection
     this.client = new net.Socket()
+    this.client.setNoDelay(true)
+    this.client.setKeepAlive(true, 10000)
 
     // Information Service
     this.informationService = new Service.AccessoryInformation();
@@ -59,7 +63,7 @@ function HarmanKardonAVRAccessory(log, config) {
         .on('set', function (newValue, callback, context) {
             if (context == 'update') {
                 that.log("update Active => setNewValue: " + newValue);
-                callback(newValue);
+                callback(null);
                 return
             }
 
@@ -91,7 +95,44 @@ function HarmanKardonAVRAccessory(log, config) {
         .getCharacteristic(Characteristic.RemoteKey)
         .on('set', function (newValue, callback) {
             that.log("set Remote Key => setNewValue: " + newValue);
-            callback(null);
+            // ok = 8
+            // hoch = 4
+            // links = 6
+            //rechts = 7
+            // runter = 5
+            // play/pause = 11
+            // zurück = 9
+            // i = 15
+            var key;
+            switch (newValue) {
+                case 9:
+                    key = "back"
+                    break;
+                case 15:
+                    key = "options"
+                    break;
+                case 8:
+                    key = "ok"
+                    break;
+                case 4:
+                    key = "up"
+                    break;
+                case 5:
+                    key = "down"
+                    break;
+                case 6:
+                    key = "left"
+                    break;
+                case 7:
+                    key = "right"
+                    break;
+                default:
+            }
+            if(key){
+                that.command(key)
+            }
+
+            callback(null, newValue);
         });
 
     this.televisionService
@@ -139,7 +180,7 @@ function HarmanKardonAVRAccessory(log, config) {
     // Input Service
     if (this.inputs && this.inputs.length != 0) {
         for (var index in this.inputs) {
-            index = index ++
+            index = index++
             that.log(index + " -> " + this.inputs[index]);
 
             this.Identifier = index
@@ -207,7 +248,7 @@ HarmanKardonAVRAccessory.prototype.command = function (cmd, param) {
 
     console.log('Socket Writable: ' + this.client.writable)
 
-    if(this.client.writable){
+    if (this.client.writable) {
         this.client.write(that.buildRequest(cmd, param))
     } else {
         this.client.connect(this.port, this.ip, function () {
