@@ -35,7 +35,7 @@ $ sudo npm install -g @marcelkordek/homebridge-harman-kardon-avr
 		"ip": "xx.x.x.xx",
 		"port": "10025",
         "inputs": ["STB","Cable/Sat"],
-        "interval": 10
+        "interval": 5
 	}]
 }
 
@@ -54,4 +54,4 @@ $ sudo npm install -g @marcelkordek/homebridge-harman-kardon-avr
 | ip | **Yes** | IP adress from your AVR |
 | port | **Yes** | **Must be** 10025 |
 | inputs | **Yes** | An Array of Inputs (STB/CABLE/SAT/GAME etc.) |
-| interval | **Yes** | Polling interval in seconds _(Default: 10s)_ |
+| interval | **Yes** | Polling interval in seconds _(Default: 5s)_ |

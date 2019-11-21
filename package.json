@@ -4,10 +4,12 @@
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
   "engines": {
-    "node": "^8.9.1",
+    "node": ">=8.9.1",
     "homebridge": "^0.4.49"
   },
-  "dependencies": {},
+  "dependencies": {
+    "tcp-ping": "^0.1.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marcelkordek/homebridge-harman-kardon-avr.git"

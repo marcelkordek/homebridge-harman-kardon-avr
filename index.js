@@ -1,9 +1,10 @@
 'use strict';
 
 var Service, Characteristic, UUIDGen
-var exec = require('child_process').exec
 var net = require('net')
 var pkg = require('./package.json');
+var tcpp = require('tcp-ping');
+var Poller = require('./lib/poller');
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service
@@ -22,11 +23,11 @@ function HarmanKardonAVRAccessory(log, config) {
     this.model_name = config["model_name"] || 'AVR 161'
     this.manufacturer = config["manufacturer"] || 'Harman Kardon'
     this.inputs = config["inputs"]
-    this.timeout = parseInt(this.timeout, 10) || 3;
+    this.interval = parseInt(config["interval"], 10) || 5;
 
     // Vars
     var that = this;
-    this.powerOn = false
+    var powerOn = false
     this.enabledServices = [];
     this.uuid = UUIDGen.generate(this.name)
 
@@ -77,8 +78,8 @@ function HarmanKardonAVRAccessory(log, config) {
             callback(null, newValue)
         })
         .on('get', function (callback) {
-            that.log("get State => " + that.powerOn);
-            callback(null, that.powerOn)
+            that.log("get State => " + powerOn);
+            callback(null, powerOn)
         });
 
     this.televisionService
@@ -172,7 +173,7 @@ function HarmanKardonAVRAccessory(log, config) {
     if (this.inputs && this.inputs.length != 0) {
         for (var index in this.inputs) {
             that.log(index + " -> " + this.inputs[index]);
-            this.Identifier = index
+            this.Identifier = index + 1
             this.Name = this.inputs[index]
             this.InputSourceType = "HDMI"
             this.InputDeviceType = "Playback"
@@ -207,12 +208,26 @@ function HarmanKardonAVRAccessory(log, config) {
         }
     }
 
-    // Polling
-    // that.televisionService.getCharacteristic(Characteristic.Active).setValue(that.activeStat, undefined, 'update');
+    // Poller
+    let poller = new Poller(this.interval * 1000);
 
+    // Wait till the timeout sent our event to the EventEmitter
+    poller.onPoll(() => {
+        //console.log('triggered');
+        tcpp.probe(that.ip, that.port, function (err, available) {
+            //console.log(available);
+            that.log("Available: ", available)
+            powerOn = available;
+            that.televisionService.getCharacteristic(Characteristic.Active).setValue(powerOn, undefined, 'update');
+            poller.poll(); // Go for the next poll
+        });
+    });
+    // Initial start
+    poller.poll();
 };
+
 // https://github.com/KarimGeiger/HKAPI
-HarmanKardonAVRAccessory.prototype.buildRequest = function(cmd, para) {
+HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, para) {
     var request = ''
     var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + para + '</para> </control> </common> </avr> </harman>'
     request += 'POST HK_APP HTTP/1.1\r\n'
@@ -221,14 +236,15 @@ HarmanKardonAVRAccessory.prototype.buildRequest = function(cmd, para) {
     request += 'Content-Length: ' + payload.length + '\r\n'
     request += '\r\n'
     request += payload
+    console.log("Build Request Command: " + cmd + ' ' + param)
     return request
 }
 
-HarmanKardonAVRAccessory.prototype.identify = function(callback) {
+HarmanKardonAVRAccessory.prototype.identify = function (callback) {
     this.log('Identify requested!')
     callback()
 }
 
-HarmanKardonAVRAccessory.prototype.getServices = function() {
+HarmanKardonAVRAccessory.prototype.getServices = function () {
     return this.enabledServices
 }
