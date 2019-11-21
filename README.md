@@ -1,39 +1,57 @@
-# homebridge-harman-kardon-avr
-This is a plugin for the Harman-Kardon-AVR.
+# @marcelkordek/tiny
 
-Installation
---------------------
-sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
+[![npm (scoped)](https://img.shields.io/npm/v/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/@marcelkordek/homebridge-harman-kardon-avr) [![npm bundle size (scoped)](https://img.shields.io/bundlephobia/min/@marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
+[![GitHub last commit](https://img.shields.io/github/last-commit/marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 
-Alternative Installation
---------------------
-sudo su && sudo npm install -g https://github.com/marcelkordek/homebridge-harman-kardon-avr
+This is a plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your **Harman Kardon AVR.** 
 
-oder 
+This plugin supports following functions:
 
-cd $(npm root -g) && sudo git clone https://github.com/marcelkordek/homebridge-harman-kardon-avr.git && cd homebridge-harman-kardon-avr && sudo npm install
+- **Power Switch** (on/off)
+- **Volume control** (volume up/volume down/mute)
+- **Inputs** like STB, Cable/Sat, Game, Radio, Spotify etc.
+- **Remote control:** native iOS Remote control
 
-Sample HomeBridge Configuration
---------------------
-    {
-    "bridge": {
-        "name": "Homebridge",
-        "username": "CC:22:3D:E3:CE:30",
-        "port": 51826,
-        "pin": "123-45-678"
-    },
+## Installation instructions
+After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 
-    "description": "",
+```
+$ sudo npm install @marcelkordek/homebridge-harman-kardon-avr
+```
 
-    "accessories": [
-        {
-            "accessory": "harman-kardon-avr",
-            "name": "AVR",
-            "description": "Harman Kardon AVR",
-            "manufacturer": "Harman Kardon",
-            "model_name": "AVR 161",
-            "ip": "xx.x.x.xx",
-            "port": "10025"
-        }
-    ]
+## Basic configuration
+
+ ```
+{
+	"bridge": {
+		...
+	},
+
+	"accessories": [{
+		"accessory": "harman-kardon-avr",
+		"name": "AVR",
+		"manufacturer": "Harman Kardon",
+		"model_name": "AVR 161",
+		"ip": "xx.x.x.xx",
+		"port": "10025",
+        "inputs": ["STB","Cable/Sat"],
+        "interval": 10
+	}]
 }
+
+ ```
+ See [Example Config](https://github.com/marcelkordek/homebridge-harman-kardon-avr/blob/master/config-sample.json) for more details.
+
+
+## Options
+
+| **Attributes** | **Required** | **Usage** |
+|------------|----------|-------|
+| accessory | **Yes** | **Must be** harman-kardon-avr.   |
+| name | **Yes** | **Unique Name** for the TV (AVR) Accessory.   |
+| manufacturer | **No** | Manufacturer (optional - Default: Harman Kardon)   |
+| model_name | **No** | Model (optional - Default: AVR 161)   |
+| ip | **Yes** | IP adress from your AVR |
+| port | **Yes** | **Must be** 10025 |
+| inputs | **Yes** | An Array of Inputs (STB/CABLE/SAT/GAME etc.) |
+| interval | **Yes** | Polling interval in seconds _(Default: 10s)_ |

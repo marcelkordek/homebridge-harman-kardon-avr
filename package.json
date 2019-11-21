@@ -1,30 +1,42 @@
 {
   "name": "homebridge-harman-kardon-avr",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
   "engines": {
-    "homebridge": ">=0.2.5",
-    "node": ">=6.14"
+    "node": "^8.9.1",
+    "homebridge": "^0.4.49"
   },
-  "dependencies": {
-    "request": "^2.88.0"
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "git://github.com/marcelkordek/homebridge-harman-kardon-avr.git"
+    "url": "git+https://github.com/marcelkordek/homebridge-harman-kardon-avr.git"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge",
+    "plugin",
+    "homebridge-plugin",
+    "harman kardon",
+    "avr"
   ],
   "author": "Marcel Kordek",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/marcelkordek/homebridge-harman-kardon-avr/issues"
   },
   "homepage": "https://github.com/marcelkordek/homebridge-harman-kardon-avr#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "publish": "npm publish --access=public",
+    "publish:patch": "npm version patch && git push && npm publish --access=public",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   }
 }
