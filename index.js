@@ -1,9 +1,9 @@
 'use strict';
 
-const Service, Characteristic
-const exec = require('child_process').exec
-const net = require('net')
-const pkg = require('./package.json');
+var Service, Characteristic, UUIDGen
+var exec = require('child_process').exec
+var net = require('net')
+var pkg = require('./package.json');
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service
@@ -12,19 +12,6 @@ module.exports = function (homebridge) {
 
     homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
 }
-
-// https://github.com/KarimGeiger/HKAPI
-function buildRequest(cmd, para) {
-    var text = ''
-    var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + para + '</para> </control> </common> </avr> </harman>'
-    text += 'POST HK_APP HTTP/1.1\r\n'
-    text += 'Host: :' + this.ip + '\r\n'
-    text += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n'
-    text += 'Content-Length: ' + payload.length + '\r\n'
-    text += '\r\n'
-    text += payload
-    return text
-};
 
 function HarmanKardonAVRAccessory(log, config) {
     // Config
@@ -75,11 +62,11 @@ function HarmanKardonAVRAccessory(log, config) {
             }
 
             that.log("set Active => setNewValue: " + newValue);
-            var cmd = powerOn ? 'power-on' : 'power-off';
+            var cmd = newValue ? 'power-on' : 'power-off';
             var client = new net.Socket()
 
             client.connect(that.port, that.ip, function () {
-                client.write(buildRequest(cmd))
+                client.write(that.buildRequest(cmd))
                 client.destroy()
             })
 
@@ -103,7 +90,7 @@ function HarmanKardonAVRAccessory(log, config) {
             var client = new net.Socket()
 
             client.connect(that.port, that.ip, function () {
-                client.write(buildRequest('source-selection', input))
+                client.write(that.buildRequest('source-selection', input))
                 client.destroy()
             })
 
@@ -145,7 +132,7 @@ function HarmanKardonAVRAccessory(log, config) {
             var client = new net.Socket()
 
             client.connect(that.port, that.ip, function () {
-                client.write(buildRequest(volume))
+                client.write(that.buildRequest(volume))
                 client.destroy()
             })
 
@@ -167,7 +154,7 @@ function HarmanKardonAVRAccessory(log, config) {
             var client = new net.Socket()
 
             client.connect(that.port, that.ip, function () {
-                client.write(buildRequest("mute-toggle"))
+                client.write(that.buildRequest("mute-toggle"))
                 client.destroy()
             })
 
@@ -207,7 +194,7 @@ function HarmanKardonAVRAccessory(log, config) {
                     var client = new net.Socket()
 
                     client.connect(that.port, that.ip, function () {
-                        client.write(buildRequest('source-selection', input))
+                        client.write(that.buildRequest('source-selection', input))
                         client.destroy()
                     })
 
@@ -224,12 +211,24 @@ function HarmanKardonAVRAccessory(log, config) {
     // that.televisionService.getCharacteristic(Characteristic.Active).setValue(that.activeStat, undefined, 'update');
 
 };
+// https://github.com/KarimGeiger/HKAPI
+HarmanKardonAVRAccessory.prototype.buildRequest = function(cmd, para) {
+    var request = ''
+    var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + para + '</para> </control> </common> </avr> </harman>'
+    request += 'POST HK_APP HTTP/1.1\r\n'
+    request += 'Host: :' + this.ip + '\r\n'
+    request += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n'
+    request += 'Content-Length: ' + payload.length + '\r\n'
+    request += '\r\n'
+    request += payload
+    return request
+}
+
+HarmanKardonAVRAccessory.prototype.identify = function(callback) {
+    this.log('Identify requested!')
+    callback()
+}
 
 HarmanKardonAVRAccessory.prototype.getServices = function() {
     return this.enabledServices
-}
-
-HarmanKardonAVRAccessory.prototype.getServices = function(callback) {
-    this.log('Identify requested!')
-    callback()
 }
