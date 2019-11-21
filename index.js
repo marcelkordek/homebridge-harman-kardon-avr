@@ -13,6 +13,7 @@ module.exports = function (homebridge) {
     homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
 }
 
+// https://github.com/KarimGeiger/HKAPI
 function buildRequest(cmd, para) {
     var text = ''
     var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + para + '</para> </control> </common> </avr> </harman>'
