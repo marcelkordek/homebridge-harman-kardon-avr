@@ -30,6 +30,7 @@ function HarmanKardonAVRAccessory(log, config) {
     var powerOn = false
     this.enabledServices = [];
     this.uuid = UUIDGen.generate(this.name)
+    this.client = new net.Socket()
 
     // Information Service
     this.informationService = new Service.AccessoryInformation();
@@ -58,22 +59,14 @@ function HarmanKardonAVRAccessory(log, config) {
         .on('set', function (newValue, callback, context) {
             if (context == 'update') {
                 that.log("update Active => setNewValue: " + newValue);
-                callback(null);
+                callback(newValue);
                 return
             }
 
             that.log("set Active => setNewValue: " + newValue);
-            var cmd = newValue ? 'power-on' : 'power-off';
-            var client = new net.Socket()
+            var power = newValue ? 'power-on' : 'power-off';
 
-            client.connect(that.port, that.ip, function () {
-                client.write(that.buildRequest(cmd))
-                client.destroy()
-            })
-
-            client.on('error', function (err) {
-                that.log('Error setting Powerstate: ' + err.message)
-            })
+            that.command(power)
 
             callback(null, newValue)
         })
@@ -87,17 +80,9 @@ function HarmanKardonAVRAccessory(log, config) {
         .on('set', function (newValue, callback) {
             that.log("set Active Identifier => setNewValue: " + newValue);
 
-            var input = that.inputs[newValue - 1]
-            var client = new net.Socket()
+            var input = that.inputs[newValue]
 
-            client.connect(that.port, that.ip, function () {
-                client.write(that.buildRequest('source-selection', input))
-                client.destroy()
-            })
-
-            client.on('error', function (err) {
-                that.log('Error setting Input: ' + err.message)
-            })
+            that.command('source-selection', input)
 
             callback(null, newValue)
         });
@@ -130,16 +115,7 @@ function HarmanKardonAVRAccessory(log, config) {
             that.log("set VolumeSelector => setNewValue: " + newValue);
             var volume = newValue ? "volume-down" : "volume-up";
 
-            var client = new net.Socket()
-
-            client.connect(that.port, that.ip, function () {
-                client.write(that.buildRequest(volume))
-                client.destroy()
-            })
-
-            client.on('error', function (err) {
-                that.log('Error setting Volume: ' + err.message)
-            })
+            that.command(volume)
 
             callback(null, newValue);
         });
@@ -152,16 +128,7 @@ function HarmanKardonAVRAccessory(log, config) {
         .on('set', function (newValue, callback) {
             that.log("set Mute => setNewValue: " + newValue);
 
-            var client = new net.Socket()
-
-            client.connect(that.port, that.ip, function () {
-                client.write(that.buildRequest("mute-toggle"))
-                client.destroy()
-            })
-
-            client.on('error', function (err) {
-                that.log('Error setting Mute: ' + err.message)
-            })
+            that.command('mute-toggle')
 
             callback(null, newValue);
         });
@@ -172,8 +139,10 @@ function HarmanKardonAVRAccessory(log, config) {
     // Input Service
     if (this.inputs && this.inputs.length != 0) {
         for (var index in this.inputs) {
+            index = index ++
             that.log(index + " -> " + this.inputs[index]);
-            this.Identifier = index + 1
+
+            this.Identifier = index
             this.Name = this.inputs[index]
             this.InputSourceType = "HDMI"
             this.InputDeviceType = "Playback"
@@ -192,16 +161,9 @@ function HarmanKardonAVRAccessory(log, config) {
                     that.log("set InputSource => setNewValue: " + newValue);
 
                     var input = this.inputs[index]
-                    var client = new net.Socket()
 
-                    client.connect(that.port, that.ip, function () {
-                        client.write(that.buildRequest('source-selection', input))
-                        client.destroy()
-                    })
+                    that.command('source-selection', input)
 
-                    client.on('error', function (err) {
-                        that.log('Error setting Input: ' + err.message)
-                    })
                 });
             this.televisionService.addLinkedService(this.input);
             this.enabledServices.push(this.input);
@@ -214,7 +176,7 @@ function HarmanKardonAVRAccessory(log, config) {
     // Wait till the timeout sent our event to the EventEmitter
     poller.onPoll(() => {
         //console.log('triggered');
-        tcpp.probe(that.ip, that.port, function (err, available) {
+        tcpp.probe(that.ip, 8080, function (err, available) {
             //console.log(available);
             that.log("Available: ", available)
             powerOn = available;
@@ -227,9 +189,9 @@ function HarmanKardonAVRAccessory(log, config) {
 };
 
 // https://github.com/KarimGeiger/HKAPI
-HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, para) {
+HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, param) {
     var request = ''
-    var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + para + '</para> </control> </common> </avr> </harman>'
+    var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + param + '</para> </control> </common> </avr> </harman>'
     request += 'POST HK_APP HTTP/1.1\r\n'
     request += 'Host: :' + this.ip + '\r\n'
     request += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n'
@@ -238,6 +200,28 @@ HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, para) {
     request += payload
     console.log("Build Request Command: " + cmd + ' ' + param)
     return request
+}
+
+HarmanKardonAVRAccessory.prototype.command = function (cmd, param) {
+    var that = this;
+
+    console.log('Socket Writable: ' + this.client.writable)
+
+    if(this.client.writable){
+        this.client.write(that.buildRequest(cmd, param))
+    } else {
+        this.client.connect(this.port, this.ip, function () {
+            that.client.write(that.buildRequest(cmd, param))
+            //that.client.destroy()
+        })
+    }
+
+    this.client.on('error', function (err) {
+        that.log('Error setting State: ' + err.message)
+        that.client.destroy()
+    })
+
+    //this.client.setKeepalive(true, 5000);
 }
 
 HarmanKardonAVRAccessory.prototype.identify = function (callback) {
