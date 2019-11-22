@@ -34,7 +34,7 @@ $ sudo npm install -g homebridge-harman-kardon-avr
 		"model_name": "AVR 161",
 		"ip": "xx.x.x.xx",
 		"port": "10025",
-        "inputs": ["STB","Cable/Sat"],
+        "inputs": ["STB","Cable Sat","Game"],
         "interval": 5
 	}]
 }
@@ -53,5 +53,17 @@ $ sudo npm install -g homebridge-harman-kardon-avr
 | model_name | **No** | Model (optional - Default: AVR 161)   |
 | ip | **Yes** | IP adress from your AVR |
 | port | **Yes** | **Must be** 10025 |
-| inputs | **Yes** | An Array of Inputs (STB/CABLE/SAT/GAME etc.) |
+| inputs | **Yes** | An Array of Inputs (STB,CABLE SAT,GAME etc.) |
 | interval | **Yes** | Polling interval in seconds _(Default: 5s)_ |
+
+## Valid Inputs
+* STB
+* Cable Sat
+* Disc
+* Radio
+* TV
+* USB
+* Game
+* Media Server
+* Home Network
+* AUX
