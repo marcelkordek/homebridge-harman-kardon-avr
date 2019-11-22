@@ -14,7 +14,7 @@ module.exports = function (homebridge) {
   homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
 }
 
-function HarmanKardonAVRAccessory(log, config) {
+function HarmanKardonAVRAccessory (log, config) {
   process.on('warning', e => log.warn(e.stack))
 
   // Config
