@@ -33,12 +33,16 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "prettier": "^1.19.1"
   },
   "scripts": {
     "publish": "npm publish",
     "publish:patch": "npm version patch && git push && npm publish",
-    "lint": "eslint index.js",
-    "lint:fix": "eslint index.js --fix"
+    "prepublish": "npm run lint",
+    "prepublish:patch": "npm run lint",
+    "lint": "eslint --ignore-path .gitignore .",
+    "lint:fix": "eslint --fix --ignore-path .gitignore .",
+    "prettier":"prettier --single-quote --trailing-comma es5 --print-width 80 --write --no-bracket-spacing **/*.js"
   }
 }

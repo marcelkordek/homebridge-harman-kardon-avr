@@ -11,10 +11,16 @@ module.exports = function (homebridge) {
   Characteristic = homebridge.hap.Characteristic
   UUIDGen = homebridge.hap.uuid
 
-  homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
+  homebridge.registerAccessory(
+    'homebridge-harman-kardon-avr',
+    'harman-kardon-avr',
+    HarmanKardonAVRAccessory
+  )
 }
 
 function HarmanKardonAVRAccessory (log, config) {
+  process.on('warning', e => log.warn(e.stack))
+
   // Config
   this.log = log
   this.name = config.name
@@ -50,20 +56,23 @@ function HarmanKardonAVRAccessory (log, config) {
   // Add the actual TV Service and listen for change events from iOS.
   // We can see the complete list of Services and Characteristics in `lib/gen/HomeKitTypes.js`
   this.televisionService = new Service.Television(this.name, this.uuid)
-  this.televisionService
-    .setCharacteristic(Characteristic.ConfiguredName, this.name)
+  this.televisionService.setCharacteristic(
+    Characteristic.ConfiguredName,
+    this.name
+  )
 
-  this.televisionService
-    .setCharacteristic(
-      Characteristic.SleepDiscoveryMode,
-      Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
-    )
+  this.televisionService.setCharacteristic(
+    Characteristic.SleepDiscoveryMode,
+    Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
+  )
   this.televisionService
     .getCharacteristic(Characteristic.Active)
     .on('set', function (newValue, callback, context) {
       if (context === 'update') {
-        that.log('update Active => setNewValue: ' + newValue)
-        callback(null)
+        if (newValue !== powerOn) {
+          that.log('update Active => setNewValue: ' + newValue)
+          callback(null, newValue)
+        }
         return
       }
 
@@ -145,13 +154,19 @@ function HarmanKardonAVRAccessory (log, config) {
   this.enabledServices.push(this.televisionService)
 
   // Speaker Service
-  this.speakerService = new Service.TelevisionSpeaker(this.name + '_Speaker_' + this.uuid)
+  this.speakerService = new Service.TelevisionSpeaker(
+    this.name + '_Speaker_' + this.uuid
+  )
 
   this.speakerService
     .setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
-    .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE)
+    .setCharacteristic(
+      Characteristic.VolumeControlType,
+      Characteristic.VolumeControlType.ABSOLUTE
+    )
 
-  this.speakerService.getCharacteristic(Characteristic.VolumeSelector)
+  this.speakerService
+    .getCharacteristic(Characteristic.VolumeSelector)
     .on('set', function (newValue, callback) {
       that.log('set VolumeSelector => setNewValue: ' + newValue)
       var volume = newValue ? 'volume-down' : 'volume-up'
@@ -161,7 +176,8 @@ function HarmanKardonAVRAccessory (log, config) {
       callback(null, newValue)
     })
 
-  this.speakerService.getCharacteristic(Characteristic.Mute)
+  this.speakerService
+    .getCharacteristic(Characteristic.Mute)
     .on('get', function (newValue, callback) {
       that.log('get Mute => setNewValue: ' + newValue)
       callback(null, false)
@@ -193,11 +209,23 @@ function HarmanKardonAVRAccessory (log, config) {
       this.input
         .setCharacteristic(Characteristic.Identifier, this.Identifier)
         .setCharacteristic(Characteristic.ConfiguredName, this.Name)
-        .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-        .setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType[this.InputSourceType])
-        .setCharacteristic(Characteristic.InputDeviceType, Characteristic.InputDeviceType[this.InputDeviceType])
-        .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState[this.CurrentVisibilityState])
-      // .setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState[this.TargetVisibilityState])
+        .setCharacteristic(
+          Characteristic.IsConfigured,
+          Characteristic.IsConfigured.CONFIGURED
+        )
+        .setCharacteristic(
+          Characteristic.InputSourceType,
+          Characteristic.InputSourceType[this.InputSourceType]
+        )
+        .setCharacteristic(
+          Characteristic.InputDeviceType,
+          Characteristic.InputDeviceType[this.InputDeviceType]
+        )
+        .setCharacteristic(
+          Characteristic.CurrentVisibilityState,
+          Characteristic.CurrentVisibilityState[this.CurrentVisibilityState]
+        )
+        // .setCharacteristic(Characteristic.TargetVisibilityState, Characteristic.TargetVisibilityState[this.TargetVisibilityState])
         .on('set', function (newValue, callback) {
           that.log('set InputSource => setNewValue: ' + newValue)
 
@@ -217,27 +245,40 @@ function HarmanKardonAVRAccessory (log, config) {
   poller.onPoll(() => {
     // that.log('triggered');
     tcpp.probe(that.ip, 8080, function (err, available) {
-      if (err) { that.log(err); return }
-      that.log('Available: ', available)
+      if (err) {
+        that.log(err)
+        return
+      }
+      // that.log('Available: ', available)
       powerOn = available
-      that.televisionService.getCharacteristic(Characteristic.Active).setValue(powerOn, undefined, 'update')
+      that.televisionService
+        .getCharacteristic(Characteristic.Active)
+        .setValue(powerOn, undefined, 'update')
       poller.poll() // Go for the next poll
     })
   })
   // Initial start
   poller.poll()
-};
+}
 
 // https://github.com/KarimGeiger/HKAPI
 HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, param) {
   var request = ''
-  var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + param + '</para> </control> </common> </avr> </harman>'
+  var payload =
+    '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' +
+    cmd +
+    '</name> <zone>Main Zone</zone> <para>' +
+    param +
+    '</para> </control> </common> </avr> </harman>'
   request += 'POST HK_APP HTTP/1.1\r\n'
   request += 'Host: :' + this.ip + '\r\n'
   request += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n'
   request += 'Content-Length: ' + payload.length + '\r\n'
   request += '\r\n'
   request += payload
+
+  cmd = cmd | ''
+  param = param | ''
   this.log('Build Request Command: ' + cmd + ' ' + param)
   return request
 }
