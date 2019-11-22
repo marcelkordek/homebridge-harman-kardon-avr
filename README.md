@@ -1,6 +1,6 @@
 # Homebridge Harman Kardon AVR
 
-[![npm](https://img.shields.io/npm/v/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/npnhomebridge-harman-kardon-avr) [![npm bundle size](https://img.shields.io/bundlephobia/min/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
+[![npm](https://img.shields.io/npm/v/homebridge-harman-kardon-avr?style=flat-square)](https://www.npmjs.com/package/homebridge-harman-kardon-avr) [![npm bundle size](https://img.shields.io/bundlephobia/min/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 [![GitHub last commit](https://img.shields.io/github/last-commit/marcelkordek/homebridge-harman-kardon-avr?style=flat-square)](https://github.com/marcelkordek/homebridge-harman-kardon-avr)
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge) to control your **Harman Kardon AVR.** 
