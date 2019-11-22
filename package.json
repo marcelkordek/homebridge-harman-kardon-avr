@@ -36,9 +36,9 @@
     "eslint-plugin-standard": "^4.0.1"
   },
   "scripts": {
-    "publish": "npm publish --access=public",
+    "publish": "npm publish",
     "publish:patch": "npm version patch && git push && npm publish",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint": "eslint index.js",
+    "lint:fix": "eslint index.js --fix"
   }
 }
