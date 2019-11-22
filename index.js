@@ -11,14 +11,10 @@ module.exports = function (homebridge) {
   Characteristic = homebridge.hap.Characteristic
   UUIDGen = homebridge.hap.uuid
 
-  homebridge.registerAccessory(
-    'homebridge-harman-kardon-avr',
-    'harman-kardon-avr',
-    HarmanKardonAVRAccessory
-  )
+  homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
 }
 
-function HarmanKardonAVRAccessory (log, config) {
+function HarmanKardonAVRAccessory(log, config) {
   process.on('warning', e => log.warn(e.stack))
 
   // Config
@@ -56,15 +52,10 @@ function HarmanKardonAVRAccessory (log, config) {
   // Add the actual TV Service and listen for change events from iOS.
   // We can see the complete list of Services and Characteristics in `lib/gen/HomeKitTypes.js`
   this.televisionService = new Service.Television(this.name, this.uuid)
-  this.televisionService.setCharacteristic(
-    Characteristic.ConfiguredName,
-    this.name
-  )
+  this.televisionService.setCharacteristic(Characteristic.ConfiguredName, this.name)
 
-  this.televisionService.setCharacteristic(
-    Characteristic.SleepDiscoveryMode,
-    Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
-  )
+  this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE)
+
   this.televisionService
     .getCharacteristic(Characteristic.Active)
     .on('set', function (newValue, callback, context) {
@@ -154,16 +145,11 @@ function HarmanKardonAVRAccessory (log, config) {
   this.enabledServices.push(this.televisionService)
 
   // Speaker Service
-  this.speakerService = new Service.TelevisionSpeaker(
-    this.name + '_Speaker_' + this.uuid
-  )
+  this.speakerService = new Service.TelevisionSpeaker(this.name + '_Speaker_' + this.uuid)
 
   this.speakerService
     .setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE)
-    .setCharacteristic(
-      Characteristic.VolumeControlType,
-      Characteristic.VolumeControlType.ABSOLUTE
-    )
+    .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE)
 
   this.speakerService
     .getCharacteristic(Characteristic.VolumeSelector)
@@ -264,12 +250,7 @@ function HarmanKardonAVRAccessory (log, config) {
 // https://github.com/KarimGeiger/HKAPI
 HarmanKardonAVRAccessory.prototype.buildRequest = function (cmd, param) {
   var request = ''
-  var payload =
-    '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' +
-    cmd +
-    '</name> <zone>Main Zone</zone> <para>' +
-    param +
-    '</para> </control> </common> </avr> </harman>'
+  var payload = '<?xml version="1.0" encoding="UTF-8"?> <harman> <avr> <common> <control> <name>' + cmd + '</name> <zone>Main Zone</zone> <para>' + param + '</para> </control> </common> </avr> </harman>'
   request += 'POST HK_APP HTTP/1.1\r\n'
   request += 'Host: :' + this.ip + '\r\n'
   request += 'User-Agent: Harman Kardon AVR Controller/1.0\r\n'
