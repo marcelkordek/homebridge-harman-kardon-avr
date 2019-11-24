@@ -37,7 +37,6 @@
     "prettier": "^1.19.1"
   },
   "scripts": {
-    "publish": "npm publish",
     "publish:patch": "npm version patch && git push && npm publish",
     "publish:minor": "npm version minor && git push && npm publish",
     "prepublish": "npm run lint",
