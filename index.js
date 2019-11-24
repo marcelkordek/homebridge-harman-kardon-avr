@@ -25,7 +25,7 @@ function HarmanKardonAVRAccessory (log, config) {
   this.model_name = config.model_name || 'AVR 161'
   this.manufacturer = config.manufacturer || 'Harman Kardon'
   this.inputs = config.inputs
-  this.interval = parseInt(config.interval, 10) || 5
+  this.interval = config.interval || 0
 
   // Vars
   var that = this
@@ -60,15 +60,18 @@ function HarmanKardonAVRAccessory (log, config) {
     .getCharacteristic(Characteristic.Active)
     .on('set', function (newValue, callback, context) {
       if (context === 'update') {
+        newValue = newValue ? true : false
         if (newValue !== powerOn) {
-          that.log('update Active => setNewValue: ' + newValue)
+          that.log('updating Power State => ' + newValue)
+          powerOn = newValue
           callback(null, newValue)
         }
         return
       }
 
-      that.log('set Active => setNewValue: ' + newValue)
+      that.log('set Power State => ' + newValue)
       var power = newValue ? 'power-on' : 'power-off'
+      powerOn = newValue ? true : false
 
       that.command(power)
 
@@ -236,15 +239,20 @@ function HarmanKardonAVRAccessory (log, config) {
         return
       }
       // that.log('Available: ', available)
-      powerOn = available
+      // powerOn = available
       that.televisionService
         .getCharacteristic(Characteristic.Active)
-        .setValue(powerOn, undefined, 'update')
+        .setValue(available, undefined, 'update')
       poller.poll() // Go for the next poll
     })
   })
   // Initial start
-  poller.poll()
+  if(this.interval !== 0){
+    this.log('Start polling')
+    poller.poll()
+  } else {
+    this.log('Polling disabled')
+  }
 }
 
 // https://github.com/KarimGeiger/HKAPI
