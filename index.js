@@ -60,7 +60,7 @@ function HarmanKardonAVRAccessory (log, config) {
     .getCharacteristic(Characteristic.Active)
     .on('set', function (newValue, callback, context) {
       if (context === 'update') {
-        newValue = newValue ? true : false
+        newValue = !!newValue
         if (newValue !== powerOn) {
           that.log('updating Power State => ' + newValue)
           powerOn = newValue
@@ -71,7 +71,7 @@ function HarmanKardonAVRAccessory (log, config) {
 
       that.log('set Power State => ' + newValue)
       var power = newValue ? 'power-on' : 'power-off'
-      powerOn = newValue ? true : false
+      powerOn = !!newValue
 
       that.command(power)
 
@@ -247,7 +247,7 @@ function HarmanKardonAVRAccessory (log, config) {
     })
   })
   // Initial start
-  if(this.interval !== 0){
+  if (this.interval !== 0) {
     this.log('Start polling')
     poller.poll()
   } else {

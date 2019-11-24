@@ -40,7 +40,6 @@
     "publish": "npm publish",
     "publish:patch": "npm version patch && git push && npm publish",
     "prepublish": "npm run lint",
-    "prepublish:patch": "npm run lint",
     "lint": "eslint --ignore-path .gitignore .",
     "lint:fix": "eslint --fix --ignore-path .gitignore .",
     "prettier": "prettier --single-quote --trailing-comma es5 --print-width 80 --write --no-bracket-spacing **/*.js"
