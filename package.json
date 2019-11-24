@@ -39,6 +39,7 @@
   "scripts": {
     "publish:patch": "npm version patch && git push && npm publish",
     "publish:minor": "npm version minor && git push && npm publish",
+    "publish:major": "npm version major && git push && npm publish",
     "prepublish": "npm run lint",
     "lint": "eslint --ignore-path .gitignore .",
     "lint:fix": "eslint --fix --ignore-path .gitignore .",
