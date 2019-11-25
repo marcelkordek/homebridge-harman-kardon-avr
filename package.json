@@ -38,6 +38,7 @@
     "prettier": "^1.19.1"
   },
   "scripts": {
+    "push": "git push",
     "publish:patch": "npm version patch && git push && npm publish",
     "publish:minor": "npm version minor && git push && npm publish",
     "publish:major": "npm version major && git push && npm publish",
@@ -46,6 +47,7 @@
     "lint:fix": "eslint --fix --ignore-path .gitignore .",
     "prettier": "prettier --single-quote --trailing-comma es5 --print-width 80 --write --no-bracket-spacing **/*.js",
     "version": "auto-changelog -p -u --commit-limit false --template keepachangelog && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md'",
+    "prepush": "auto-changelog -p -u --commit-limit false --template keepachangelog && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md'",
     "log": "auto-changelog -p -u --commit-limit false --template keepachangelog"
   }
 }
