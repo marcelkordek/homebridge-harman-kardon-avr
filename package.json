@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/marcelkordek/homebridge-harman-kardon-avr#readme",
   "devDependencies": {
+    "auto-changelog": "^1.16.2",
     "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -43,6 +44,8 @@
     "prepublish": "npm run lint",
     "lint": "eslint --ignore-path .gitignore .",
     "lint:fix": "eslint --fix --ignore-path .gitignore .",
-    "prettier": "prettier --single-quote --trailing-comma es5 --print-width 80 --write --no-bracket-spacing **/*.js"
+    "prettier": "prettier --single-quote --trailing-comma es5 --print-width 80 --write --no-bracket-spacing **/*.js",
+    "version": "auto-changelog -p -u --commit-limit false --template keepachangelog && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md'",
+    "log": "auto-changelog -p -u --commit-limit false --template keepachangelog"
   }
 }
