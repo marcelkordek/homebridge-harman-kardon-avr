@@ -1,0 +1,51 @@
+{
+    "pluginAlias": "harman-kardon-avr",
+    "pluginType": "accessory",
+    "schema": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "AVR",
+        "required": true
+      },
+      "manufacturer": {
+        "title": "Manufacturer",
+        "type": "string",
+        "default": "Harman Kardon",
+        "required": false
+      },
+      "model_name": {
+        "title": "Model",
+        "type": "string",
+        "default": "AVR 161",
+        "required": false
+      },
+      "ip": {
+        "title": "IP",
+        "type": "string",
+        "default": "xx.xx.xx.xx",
+        "required": true
+      },
+      "port": {
+        "title": "Maximum FPS",
+        "type": "integer",
+        "default": 10,
+        "required": true
+        },
+      "interval": {
+        "title": "Polling Interval",
+        "type": "integer",
+        "default": 5,
+        "required": true
+        },
+        "inputs": {
+            "title": "Define Inputs",
+            "type": "array",
+            "items": {
+              "title": "Input",
+              "type": "string"
+            }
+          }
+    }
+  }
+  
