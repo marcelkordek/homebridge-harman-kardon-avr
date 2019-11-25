@@ -239,7 +239,6 @@ function HarmanKardonAVRAccessory (log, config) {
         return
       }
       // that.log('Available: ', available)
-      // powerOn = available
       that.televisionService
         .getCharacteristic(Characteristic.Active)
         .setValue(available, undefined, 'update')
