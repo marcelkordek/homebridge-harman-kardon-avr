@@ -1,6 +1,6 @@
 {
   "name": "homebridge-harman-kardon-avr",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
   "engines": {
