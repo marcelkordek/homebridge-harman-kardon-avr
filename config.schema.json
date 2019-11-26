@@ -27,7 +27,7 @@
         "required": true
       },
       "port": {
-        "title": "Maximum FPS",
+        "title": "Port",
         "type": "integer",
         "default": 10,
         "required": true
@@ -36,14 +36,16 @@
         "title": "Polling Interval",
         "type": "integer",
         "default": 5,
-        "required": true
+        "required": true,
+        "description": "0 = disabled"
         },
         "inputs": {
             "title": "Define Inputs",
             "type": "array",
             "items": {
               "title": "Input",
-              "type": "string"
+              "type": "string",
+              "description": "(Cable Sat, STB, Radio etc.)"
             }
           }
     }
