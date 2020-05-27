@@ -4,8 +4,8 @@
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
   "engines": {
-    "node": ">=8.9.1",
-    "homebridge": "^0.4.49"
+    "homebridge": "^1.0.4",
+    "node": "^12.16.1"
   },
   "dependencies": {
     "tcp-ping": "^0.1.1"
