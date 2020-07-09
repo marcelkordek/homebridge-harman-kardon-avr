@@ -167,8 +167,8 @@ function HarmanKardonAVRAccessory (log, config) {
 
   this.speakerService
     .getCharacteristic(Characteristic.Mute)
-    .on('get', function (newValue, callback) {
-      that.log('get Mute => setNewValue: ' + newValue)
+    .on('get', function (callback) {
+      that.log('get Mute')
       callback(null, false)
     })
     .on('set', function (newValue, callback) {
