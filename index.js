@@ -14,11 +14,12 @@ module.exports = function (homebridge) {
   homebridge.registerAccessory('homebridge-harman-kardon-avr', 'harman-kardon-avr', HarmanKardonAVRAccessory)
 }
 
-function HarmanKardonAVRAccessory (log, config) {
+function HarmanKardonAVRAccessory (log, config, api) {
   process.on('warning', e => log.warn(e.stack))
 
   // Config
   this.log = log
+  this.api = api
   this.name = config.name
   this.ip = config.ip
   this.port = config.port || 10025
@@ -52,6 +53,8 @@ function HarmanKardonAVRAccessory (log, config) {
   // Add the actual TV Service and listen for change events from iOS.
   // We can see the complete list of Services and Characteristics in `lib/gen/HomeKitTypes.js`
   this.televisionService = new Service.Television(this.name, this.uuid)
+  this.televisionService.category = this.api.hap.Categories.AUDIO_RECEIVER; 
+  
   this.televisionService.setCharacteristic(Characteristic.ConfiguredName, this.name)
 
   this.televisionService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE)
@@ -92,7 +95,7 @@ function HarmanKardonAVRAccessory (log, config) {
 
       that.command('source-selection', input)
 
-      callback(null, newValue)
+      callback(null)
     })
 
   this.televisionService
@@ -136,7 +139,7 @@ function HarmanKardonAVRAccessory (log, config) {
         that.command(key)
       }
 
-      callback(null, newValue)
+      callback(null)
     })
 
   this.televisionService
@@ -177,7 +180,7 @@ function HarmanKardonAVRAccessory (log, config) {
 
       that.command('mute-toggle')
 
-      callback(null, newValue)
+      callback(null)
     })
 
   this.televisionService.addLinkedService(this.speakerService)
@@ -222,6 +225,7 @@ function HarmanKardonAVRAccessory (log, config) {
           var input = this.inputs[index]
 
           that.command('source-selection', input)
+          callback(null);
         })
       this.televisionService.addLinkedService(this.input)
       this.enabledServices.push(this.input)
