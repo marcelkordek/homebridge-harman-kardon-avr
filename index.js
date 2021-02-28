@@ -64,8 +64,9 @@ function HarmanKardonAVRAccessory (log, config) {
         if (newValue !== powerOn) {
           that.log('updating Power State => ' + newValue)
           powerOn = newValue
-          callback(null, newValue)
+         //callback(null, newValue)
         }
+        callback(null)
         return
       }
 
@@ -75,7 +76,7 @@ function HarmanKardonAVRAccessory (log, config) {
 
       that.command(power)
 
-      callback(null, newValue)
+      callback(null)
     })
     .on('get', function (callback) {
       that.log('get State => ' + powerOn)

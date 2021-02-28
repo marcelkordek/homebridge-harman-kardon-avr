@@ -4,8 +4,8 @@
   "description": "control harman kardon avr for homebridge: https://github.com/nfarina/homebridge",
   "main": "index.js",
   "engines": {
-    "homebridge": "^1.0.4",
-    "node": "^12.16.1"
+    "homebridge": "^1.1.0",
+    "node": "^14.15.0"
   },
   "dependencies": {
     "tcp-ping": "^0.1.1"
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/marcelkordek/homebridge-harman-kardon-avr#readme",
   "devDependencies": {
-    "auto-changelog": "^1.16.2",
+    "auto-changelog": "^1.16.4",
     "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
